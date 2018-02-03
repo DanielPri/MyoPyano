@@ -9,7 +9,7 @@
 #include <algorithm>
 
 // The only file that needs to be included to use the Myo C++ SDK is myo.hpp.
-#include <C:\Users\Surfer\Documents\Projects\McHacks5\MyoPyano\MyoPyano\MyoPyano\include\myo\myo.hpp>
+#include <..\include\myo\myo.hpp>
 
 // Classes that inherit from myo::DeviceListener can be used to receive events from Myo devices. DeviceListener
 // provides several virtual functions for handling different kinds of events. If you do not override an event, the
@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 
     // First, we create a Hub with our application identifier. Be sure not to use the com.example namespace when
     // publishing your application. The Hub provides access to one or more Myos.
-    myo::Hub hub("com.example.hello-myo");
+    myo::Hub hub("com.Pyano.MyoPyano");
 
     std::cout << "Attempting to find a Myo..." << std::endl;
 
