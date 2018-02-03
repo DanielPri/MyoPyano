@@ -7,3 +7,4 @@ Myo application that plays an invisible piano
 Daniel Privorotsky
 Sean Marcoux 
 Luan Tran
+Anand Patel
