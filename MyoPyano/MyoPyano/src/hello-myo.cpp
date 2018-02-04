@@ -180,7 +180,7 @@ public:
 			<< "[ Pitch: " << std::string(pitch_w, '*') << std::string(18 - pitch_w, ' ') << ']'
 			<< "[ Yaw : " << std::string(yaw_w, '*') << std::string(18 - yaw_w, ' ') << ']';
 			*/
-			std::cout << "[ Roll: " << roll_w[i] << "] [ Pitch: " << pitch_w[i] << " ] [ Yaw: " << yaw_w[i] << " ]";
+			std::cout << i << "[ Roll: " << roll_w[i] << "] [ Pitch: " << pitch_w[i] << " ] [ Yaw: " << yaw_w[i] << " ]";
 		
 			if (onArm[i]){
 				// Print out the lock state, the currently recognized pose, and which arm Myo is being worn on.
@@ -190,18 +190,37 @@ public:
 				// that we can fill the rest of the field with spaces below, so we obtain it as a string using toString().
 				std::string poseString = currentPose[i].toString();
 
-				std::cout << '[' << (isUnlocked[i] ? "unlocked" : "locked  ") << ']'
+				/*std::cout << '[' << (isUnlocked[i] ? "unlocked" : "locked  ") << ']'
 					<< '[' << (whichArm[i] == myo::armLeft ? "L" : "R") << ']'
-					<< '[' << poseString << std::string(14 - poseString.size(), ' ') << ']';
+					<< '[' << poseString << std::string(14 - poseString.size(), ' ') << ']';*/
 			}
 			else {
 				// Print out a placeholder for the arm and pose when Myo doesn't currently know which arm it's on.
 				std::cout << '[' << std::string(8, ' ') << ']' << "[?]" << '[' << std::string(14, ' ') << ']';
 			}
 		}
-
+		std::cout << "\n";
         std::cout << std::flush;
     }
+
+	void printRight()
+	{
+		
+			// Clear the current line
+		std::cout << '\n';
+		std::cout << "Right Arm: [ Roll: " << roll_w[0] << "] [ Pitch: " << pitch_w[0] << " ] [ Yaw: " << yaw_w[0] << " ]";
+		//std::cout << "\n";
+		std::cout << std::flush;
+	}
+	void printLeft()
+	{
+
+		// Clear the current line
+		std::cout << '\n';
+		std::cout << "Left Arm: [ Roll: " << roll_w[1] << "] [ Pitch: " << pitch_w[1] << " ] [ Yaw: " << yaw_w[1] << " ]";
+		//std::cout << "\n";
+		std::cout << std::flush;
+	}
 
 	size_t identifyMyo(myo::Myo* myo) {
 		// Walk through the list of Myo devices that we've seen pairing events for.
@@ -232,6 +251,15 @@ public:
 	std::vector<myo::Pose> currentPose;
 };
 
+int correction(int cv, int no) {
+	if (cv >= no) {
+		return cv - no;
+	}
+	else {
+		return cv + (360 - no);
+	}
+}
+
 int main(int argc, char** argv)
 {
     // We catch any exceptions that might occur below -- see the catch statement for more details.
@@ -239,7 +267,7 @@ int main(int argc, char** argv)
 
 	// start the sound engine with default parameters
 	irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
-	char* sounds[2] = { "Sounds/a.wav", "Sounds/b.wav"};
+	char* sounds[2][4] = { {"Sounds/909_snr2.wav", "Sounds/crash_cymbals.wav", "Sounds/bassdr04.wav", "Sounds/hh4.wav"},{ "Sounds/a.wav", "Sounds/b.wav", "Sounds/c.wav", "Sounds/d.wav"} };
 
 	if (!engine)
 		return 0; // error starting up the engine
@@ -271,7 +299,7 @@ int main(int argc, char** argv)
     // Hub::run() to send events to all registered device listeners.
     hub.addListener(&collector);
 	bool boolean = true;
-
+	int step = 75;
 	
 	//engine->stopAllSounds();
 	//engine->drop(); // delete engine
@@ -283,26 +311,109 @@ int main(int argc, char** argv)
     while (1) {
         // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
         // In this case, we wish to update our display 20 times a second, so we run for 1000/20 milliseconds.
-        hub.run(1000/20);
+        hub.run(1000/10);
         // After processing events, we call the print() member function we defined above to print out the values we've
         // obtained from any events that have occurred.
 		if (boolean) {
 			collector.print();
 			boolean = false;
 		}
-		
+		int c_yaw[2];
 		for (int i = 0; i < collector.knownMyos.size(); i++)
 		{
-			if (collector.pitch_w[i] - collector.origin_pitch[i] > 50) {
+			if (collector.pitch_w[i] - collector.origin_pitch[i] > 45) {
 				allowedSound[i] = true;
 			}
-			if (collector.pitch_w[i] - collector.origin_pitch[i] < 50 && allowedSound[i]) {
-				//std::cout << "Wassup bitches!!\n";
+			if (collector.pitch_w[i] - collector.origin_pitch[i] < 40 && allowedSound[i]) {
+
+				c_yaw[i] = correction(collector.yaw_w[i], collector.origin_yaw[i]);
+				//Right Arm
+				if (i == 0) {
+					collector.printRight();
+					std::cout << " --------- Right c_yaw: " << c_yaw[i] << "\n";
+					if (c_yaw[i] >= 35 && c_yaw[i] < 150) {
+						std::cout << " ZONE 1: Cymbals" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/crash_cymbals.wav", false, false);
+						if (sound)
+							sound->drop();
+					}
+					else if ((c_yaw[i] < 35 && c_yaw >= 0) || (c_yaw[i] > 320 && c_yaw[i] <= 359)) {
+						std::cout << " ZONE 2: Snare" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/909_snr2.wav", false, false);
+						if (sound)
+						sound->drop();	
+					}
+					else if (c_yaw[i] < 320 && c_yaw[i] >= 260) {
+						std::cout << " ZONE 3: Bass" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/bassdr04.wav", false, false);
+						if (sound)
+						sound->drop();
+					}
+					else if (c_yaw[i]  < 260 && c_yaw[i] >= 150) {
+						std::cout << " ZONE 4: Cymbals" << "\n";
+
+						irrklang::ISound *sound = engine->play2D("Sounds/crash_cymbals.wav", false, false);
+						if (sound)
+						sound->drop();
+					}
+				}
+				//Left arm
+				else {
+					collector.printLeft();
+					std::cout << " --------- Left c_yaw: " << c_yaw[i] << "\n";
+					if (c_yaw[i] >= 90 && c_yaw[i] < 260) {
+						std::cout << " ZONE 4: Cymbals" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/crash_cymbals.wav", false, false);
+						if (sound)
+							sound->drop();
+					}
+					else if (c_yaw[i] >= 40 && c_yaw[i] < 90) {
+						std::cout << " ZONE 3: Snare" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/909_snr2.wav", false, false);
+						if (sound)
+							sound->drop();
+					}
+					else if (c_yaw[i] < 40 || c_yaw[i] >= 320) {
+						std::cout << " ZONE 2: Snare" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/909_snr2.wav", false, false);
+						if (sound)
+							sound->drop();
+					}
+					else if (c_yaw[i]  >= 260 && c_yaw[i] < 320) {
+						std::cout << " ZONE 1: High Hat" << "\n";
+
+						irrklang::ISound *sound = engine->play2D("Sounds/hh4.wav", false, false);
+						if (sound)
+							sound->drop();
+					}
+				}
 				allowedSound[i] = false;
 				// play some sound stream, not looped
-				irrklang::ISound *sound = engine->play2D(sounds[i], false, false);
-				if (sound)
-					sound->drop();
+
+				
+				/*if (c_yaw[i] < step) {
+					irrklang::ISound *sound = engine->play2D(sounds[i][0], false, false);
+					if (sound)
+						sound->drop();
+				}
+				else if (delta_yaw >= step) {
+					irrklang::ISound *sound = engine->play2D(sounds[i][1], false, false);
+					if (sound)
+						sound->drop();
+				}
+				else if (delta_yaw < 0 && delta_yaw >= -step) {
+					irrklang::ISound *sound = engine->play2D(sounds[i][2], false, false);
+					if (sound)
+						sound->drop();
+				}
+				else if (delta_yaw  < -step) {
+					irrklang::ISound *sound = engine->play2D(sounds[i][3], false, false);
+					if (sound)
+						sound->drop();
+				}*/
+
+			
+				
 			}
 			/*
 					if (collector.pitch_w > 180 && collector.pitch_w < 220) {
