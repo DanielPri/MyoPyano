@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include <C:\Users\Surfer\Documents\Projects\McHacks5\MyoPyano\MyoPyano\MyoPyano\include\myo\libmyo.h>
+#include "..\libmyo.h"
 
 namespace myo {
 
