@@ -5,7 +5,7 @@
 #include <iosfwd>
 #include <string>
 
-#include <C:\Users\Surfer\Documents\Projects\McHacks5\MyoPyano\MyoPyano\MyoPyano\include\myo\libmyo.h>
+#include "..\include\myo\libmyo.h"
 
 namespace myo {
 

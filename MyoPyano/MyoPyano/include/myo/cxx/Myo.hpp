@@ -2,7 +2,7 @@
 // Distributed under the Myo SDK license agreement. See LICENSE.txt for details.
 #pragma once
 
-#include <C:\Users\Surfer\Documents\Projects\McHacks5\MyoPyano\MyoPyano\MyoPyano\include\myo\libmyo.h>
+#include "..\include\myo\libmyo.h"
 
 namespace myo {
 
