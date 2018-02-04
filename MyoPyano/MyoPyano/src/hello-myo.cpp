@@ -311,7 +311,7 @@ int main(int argc, char** argv)
     while (1) {
         // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
         // In this case, we wish to update our display 20 times a second, so we run for 1000/20 milliseconds.
-        hub.run(1000/10);
+        //hub.run(1000/100);
         // After processing events, we call the print() member function we defined above to print out the values we've
         // obtained from any events that have occurred.
 		if (boolean) {
@@ -319,8 +319,10 @@ int main(int argc, char** argv)
 			boolean = false;
 		}
 		int c_yaw[2];
+		//if (collector.roll_w[0])
 		for (int i = 0; i < collector.knownMyos.size(); i++)
 		{
+			
 			if (collector.pitch_w[i] - collector.origin_pitch[i] > 45) {
 				allowedSound[i] = true;
 			}
@@ -344,15 +346,15 @@ int main(int argc, char** argv)
 						sound->drop();	
 					}
 					else if (c_yaw[i] < 320 && c_yaw[i] >= 260) {
-						std::cout << " ZONE 3: Bass" << "\n";
-						irrklang::ISound *sound = engine->play2D("Sounds/bassdr04.wav", false, false);
+						std::cout << " ZONE 3: Tom 2" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/tom2.wav", false, false);
 						if (sound)
 						sound->drop();
 					}
 					else if (c_yaw[i]  < 260 && c_yaw[i] >= 150) {
-						std::cout << " ZONE 4: Cymbals" << "\n";
+						std::cout << " ZONE 4: Floor Tom" << "\n";
 
-						irrklang::ISound *sound = engine->play2D("Sounds/crash_cymbals.wav", false, false);
+						irrklang::ISound *sound = engine->play2D("Sounds/tomfloor.wav", false, false);
 						if (sound)
 						sound->drop();
 					}
@@ -362,8 +364,8 @@ int main(int argc, char** argv)
 					collector.printLeft();
 					std::cout << " --------- Left c_yaw: " << c_yaw[i] << "\n";
 					if (c_yaw[i] >= 90 && c_yaw[i] < 260) {
-						std::cout << " ZONE 4: Cymbals" << "\n";
-						irrklang::ISound *sound = engine->play2D("Sounds/crash_cymbals.wav", false, false);
+						std::cout << " ZONE 4: High Hat" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/hh4.wav", false, false);
 						if (sound)
 							sound->drop();
 					}
@@ -374,15 +376,15 @@ int main(int argc, char** argv)
 							sound->drop();
 					}
 					else if (c_yaw[i] < 40 || c_yaw[i] >= 320) {
-						std::cout << " ZONE 2: Snare" << "\n";
-						irrklang::ISound *sound = engine->play2D("Sounds/909_snr2.wav", false, false);
+						std::cout << " ZONE 2: Tom 1" << "\n";
+						irrklang::ISound *sound = engine->play2D("Sounds/tom1.wav", false, false);
 						if (sound)
 							sound->drop();
 					}
 					else if (c_yaw[i]  >= 260 && c_yaw[i] < 320) {
-						std::cout << " ZONE 1: High Hat" << "\n";
+						std::cout << " ZONE 1: Bass" << "\n";
 
-						irrklang::ISound *sound = engine->play2D("Sounds/hh4.wav", false, false);
+						irrklang::ISound *sound = engine->play2D("Sounds/bassdr04.wav", false, false);
 						if (sound)
 							sound->drop();
 					}
