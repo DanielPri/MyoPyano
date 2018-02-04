@@ -4,6 +4,7 @@
 
 #include "..\include\myo\libmyo.h"
 
+
 namespace myo {
 
 /// Represents a Myo device with a specific MAC address.

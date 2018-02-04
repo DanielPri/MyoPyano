@@ -77,7 +77,7 @@
       <AdditionalIncludeDirectories>C:\Users\tluan\gitrepos\MyoPyano\MyoPyano\MyoPyano\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Users\tluan\gitrepos\MyoPyano\MyoPyano\MyoPyano\lib\myo32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\tluan\gitrepos\MyoPyano\MyoPyano\MyoPyano\lib\myo32.lib;C:\Users\tluan\gitrepos\MyoPyano\MyoPyano\MyoPyano\lib\irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
