@@ -20,7 +20,7 @@
 class DataCollector : public myo::DeviceListener {
 public:
     DataCollector()
-    : onArm(false), isUnlocked(false), roll_w(0), pitch_w(0), yaw_w(0), currentPose()
+    : onArm(false), isUnlocked(false), roll_w(0), pitch_w(0), yaw_w(0), origin_roll(0), origin_pitch(0), origin_yaw(0), currentPose()
     {
     }
 
@@ -32,6 +32,9 @@ public:
         roll_w = 0;
         pitch_w = 0;
         yaw_w = 0;
+		origin_roll = 0;
+		origin_pitch = 0;
+		origin_yaw = 0;
         onArm = false;
         isUnlocked = false;
     }
@@ -46,12 +49,20 @@ public:
         using std::max;
         using std::min;
 
+		//std::cout << "w: " << quat.w() << " x: " << quat.x() << " y: " << quat.y() << " z: " << quat.z() << "\n";
         // Calculate Euler angles (roll, pitch, and yaw) from the unit quaternion.
         float roll = atan2(2.0f * (quat.w() * quat.x() + quat.y() * quat.z()),
                            1.0f - 2.0f * (quat.x() * quat.x() + quat.y() * quat.y()));
 		float pitch = asin(max(-1.0f, min(1.0f, 2.0f * (quat.w() * quat.y() - quat.z() * quat.x()))));
 		float yaw = atan2(2.0f * (quat.w() * quat.z() + quat.x() * quat.y()),
                         1.0f - 2.0f * (quat.y() * quat.y() + quat.z() * quat.z()));
+		
+		if (origin_pitch == 0)
+		{
+			origin_roll = static_cast<int>((roll + (float)M_PI) / (M_PI * 2.0f) * 359);
+			origin_pitch = static_cast<int>((pitch + (float)M_PI / 2.0f) / M_PI * 359);
+			origin_yaw = static_cast<int>((yaw + (float)M_PI) / (M_PI * 2.0f) * 359);
+		}
 
         // Convert the floating point angles in radians to a scale from 0 to 18.
         roll_w = static_cast<int>((roll + (float)M_PI)/(M_PI * 2.0f) * 359);
@@ -65,7 +76,7 @@ public:
     {
         currentPose = pose;
 
-        if (pose != myo::Pose::unknown && pose != myo::Pose::rest) {
+        /*if (pose != myo::Pose::unknown && pose != myo::Pose::rest) {
             // Tell the Myo to stay unlocked until told otherwise. We do that here so you can hold the poses without the
             // Myo becoming locked.
             myo->unlock(myo::Myo::unlockHold);
@@ -77,7 +88,15 @@ public:
             // Tell the Myo to stay unlocked only for a short period. This allows the Myo to stay unlocked while poses
             // are being performed, but lock after inactivity.
             myo->unlock(myo::Myo::unlockTimed);
-        }
+        }*/
+		std::cout << pose;
+		if (pose == myo::Pose::fist)
+		{
+			std::cout << "fist";
+			origin_pitch = 0;
+			origin_roll = 0;
+			origin_yaw = 0;
+		}
     }
 
     // onArmSync() is called whenever Myo has recognized a Sync Gesture after someone has put it on their
@@ -151,7 +170,8 @@ public:
     bool isUnlocked;
 
     // These values are set by onOrientationData() and onPose() above.
-    int roll_w, pitch_w, yaw_w;
+	int roll_w, pitch_w, yaw_w;
+	int origin_roll, origin_pitch, origin_yaw;
     myo::Pose currentPose;
 };
 
@@ -201,6 +221,7 @@ int main(int argc, char** argv)
 
 	
 	//collector.currentPose();
+
     // Finally we enter our main loop.
     while (1) {
         // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
@@ -213,10 +234,10 @@ int main(int argc, char** argv)
 			boolean = false;
 		}
 		
-		if (collector.pitch_w > 200) {
+		if (collector.pitch_w - collector.origin_pitch > 50) {
 			allowedSound = true;
 		}
-		if (collector.pitch_w < 200 && allowedSound) {
+		if (collector.pitch_w - collector.origin_pitch < 50 && allowedSound) {
 			//std::cout << "Wassup bitches!!\n";
 			allowedSound = false;
 			// play some sound stream, not looped
