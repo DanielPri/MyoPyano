@@ -157,12 +157,11 @@ int main(int argc, char** argv)
     // We catch any exceptions that might occur below -- see the catch statement for more details.
     try {
 
-	// start the sound engine with default parameters
-	irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
+		// start the sound engine with default parameters
+		irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
 
-	if (!engine)
-		return 0; // error starting up the engine
-
+		if (!engine)
+			return 0; // error starting up the engine
     // First, we create a Hub with our application identifier. Be sure not to use the com.example namespace when
     // publishing your application. The Hub provides access to one or more Myos.
     myo::Hub hub("com.Pyano.MyoPyano");
@@ -190,7 +189,9 @@ int main(int argc, char** argv)
     // Hub::run() to send events to all registered device listeners.
     hub.addListener(&collector);
 
-	// play some sound stream, not looped
+	
+
+				  // play some sound stream, looped
 	engine->play2D("Sounds/a.wav", false);
 
 	char i = 0;
