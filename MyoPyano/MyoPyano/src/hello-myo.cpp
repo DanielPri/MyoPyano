@@ -195,13 +195,12 @@ int main(int argc, char** argv)
 	bool boolean = true;
 	bool allowedSound = false;
 
-	// play some sound stream, not looped
-	engine->play2D("Sounds/a.wav", false);
+	
 	//engine->stopAllSounds();
 	//engine->drop(); // delete engine
 
 	
-
+	//collector.currentPose();
     // Finally we enter our main loop.
     while (1) {
         // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
@@ -218,14 +217,20 @@ int main(int argc, char** argv)
 			allowedSound = true;
 		}
 		if (collector.pitch_w < 200 && allowedSound) {
-			std::cout << "Wassup bitches!!\n";
+			//std::cout << "Wassup bitches!!\n";
 			allowedSound = false;
+			// play some sound stream, not looped
+			irrklang::ISound *sound = engine->play2D("Sounds/a.wav", false, false);
+			if (sound)
+				sound->drop();
 		}
 /*
 		if (collector.pitch_w > 180 && collector.pitch_w < 220) {
 			std::cout << "Wassup bitches!!\n";
 		}*/
     }
+
+	engine->drop();
 
     // If a standard exception occurred, we print out its message and exit.
     } catch (const std::exception& e) {
