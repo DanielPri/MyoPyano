@@ -3,6 +3,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
+#include <stdio.h>
 #include <iomanip>
 #include <stdexcept>
 #include <string>
@@ -192,11 +193,10 @@ int main(int argc, char** argv)
 
 	// play some sound stream, not looped
 	engine->play2D("Sounds/a.wav", false);
+	//engine->stopAllSounds();
+	//engine->drop(); // delete engine
 
-	char i = 0;
-	std::cin >> i; // wait for user to press some key
-
-	engine->drop(); // delete engine
+	
 
     // Finally we enter our main loop.
     while (1) {
