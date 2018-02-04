@@ -10,8 +10,9 @@
 #include <algorithm>
 
 // The only file that needs to be included to use the Myo C++ SDK is myo.hpp.
-#include <..\include\myo\myo.hpp>
-#include <../include/irrKlang/irrKlang.h>
+
+#include "..\include\myo\myo.hpp"
+#include "../include/irrKlang/irrKlang.h"
 
 // Classes that inherit from myo::DeviceListener can be used to receive events from Myo devices. DeviceListener
 // provides several virtual functions for handling different kinds of events. If you do not override an event, the
@@ -48,14 +49,14 @@ public:
         // Calculate Euler angles (roll, pitch, and yaw) from the unit quaternion.
         float roll = atan2(2.0f * (quat.w() * quat.x() + quat.y() * quat.z()),
                            1.0f - 2.0f * (quat.x() * quat.x() + quat.y() * quat.y()));
-        float pitch = asin(max(-1.0f, min(1.0f, 2.0f * (quat.w() * quat.y() - quat.z() * quat.x()))));
-        float yaw = atan2(2.0f * (quat.w() * quat.z() + quat.x() * quat.y()),
+		float pitch = asin(max(-1.0f, min(1.0f, 2.0f * (quat.w() * quat.y() - quat.z() * quat.x()))));
+		float yaw = atan2(2.0f * (quat.w() * quat.z() + quat.x() * quat.y()),
                         1.0f - 2.0f * (quat.y() * quat.y() + quat.z() * quat.z()));
 
         // Convert the floating point angles in radians to a scale from 0 to 18.
-        roll_w = static_cast<int>((roll + (float)M_PI)/(M_PI * 2.0f) * 18);
-        pitch_w = static_cast<int>((pitch + (float)M_PI/2.0f)/M_PI * 18);
-        yaw_w = static_cast<int>((yaw + (float)M_PI)/(M_PI * 2.0f) * 18);
+        roll_w = static_cast<int>((roll + (float)M_PI)/(M_PI * 2.0f) * 359);
+        pitch_w = static_cast<int>((pitch + (float)M_PI/2.0f)/M_PI * 359);
+        yaw_w = static_cast<int>((yaw + (float)M_PI)/(M_PI * 2.0f) * 359);
     }
 
     // onPose() is called whenever the Myo detects that the person wearing it has changed their pose, for example,
@@ -118,10 +119,11 @@ public:
         std::cout << '\n';
 
         // Print out the orientation. Orientation data is always available, even if no arm is currently recognized.
-        std::cout << "[ Roll: " << std::string(roll_w, '*') << std::string(18 - roll_w, ' ') << ']'
+        /*std::cout << "[ Roll: " << std::roll_w, '*') << std::string(18 - roll_w, ' ') << ']'
                   << "[ Pitch: " << std::string(pitch_w, '*') << std::string(18 - pitch_w, ' ') << ']'
                   << "[ Yaw : " << std::string(yaw_w, '*') << std::string(18 - yaw_w, ' ') << ']';
-
+*/		
+		std::cout << "[ Roll: " << roll_w << "] [ Pitch: " << pitch_w << " ] [ Yaw: " << yaw_w << " ]";
         if (onArm) {
             // Print out the lock state, the currently recognized pose, and which arm Myo is being worn on.
 
@@ -190,6 +192,8 @@ int main(int argc, char** argv)
     // Hub::addListener() takes the address of any object whose class inherits from DeviceListener, and will cause
     // Hub::run() to send events to all registered device listeners.
     hub.addListener(&collector);
+	bool boolean = true;
+	bool allowedSound = false;
 
 	// play some sound stream, not looped
 	engine->play2D("Sounds/a.wav", false);
@@ -205,7 +209,22 @@ int main(int argc, char** argv)
         hub.run(1000/20);
         // After processing events, we call the print() member function we defined above to print out the values we've
         // obtained from any events that have occurred.
-        collector.print();
+		if (boolean) {
+			collector.print();
+			boolean = false;
+		}
+		
+		if (collector.pitch_w > 200) {
+			allowedSound = true;
+		}
+		if (collector.pitch_w < 200 && allowedSound) {
+			std::cout << "Wassup bitches!!\n";
+			allowedSound = false;
+		}
+/*
+		if (collector.pitch_w > 180 && collector.pitch_w < 220) {
+			std::cout << "Wassup bitches!!\n";
+		}*/
     }
 
     // If a standard exception occurred, we print out its message and exit.

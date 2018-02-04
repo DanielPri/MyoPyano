@@ -5,6 +5,7 @@
 #include <iosfwd>
 #include <string>
 
+
 #include "..\libmyo.h"
 
 namespace myo {
