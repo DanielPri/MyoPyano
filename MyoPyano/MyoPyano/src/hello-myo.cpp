@@ -311,7 +311,7 @@ int main(int argc, char** argv)
     while (1) {
         // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
         // In this case, we wish to update our display 20 times a second, so we run for 1000/20 milliseconds.
-        //hub.run(1000/100);
+        hub.run(1000/100);
         // After processing events, we call the print() member function we defined above to print out the values we've
         // obtained from any events that have occurred.
 		if (boolean) {
